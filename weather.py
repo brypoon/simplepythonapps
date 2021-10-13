@@ -1,3 +1,5 @@
+# weather app using openweathermap api
+
 import os
 import requests
 import sys

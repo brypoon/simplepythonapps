@@ -1,2 +1,2 @@
 # simplepythonapps
-simple python apps
+Storing some simple python apps for beginner practice
