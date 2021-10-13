@@ -1,5 +1,7 @@
 import collections
 import requests
+import os
+import sys
 
 Location = collections.namedtuple('Location', 'city state country')
 Weather = collections.namedtuple('Weather', 'location units temp condition')
@@ -46,7 +48,13 @@ def get_location_name(location):
 
 
 def call_weather_api(loc):
-    url = f'https://weather.talkpython.fm/api/weather?city={loc.city}&country={loc.country}&units=metric'
+    api_key = os.getenv('OWM_API_KEY')
+
+    if not api_key:
+        print("Error: no 'OWM_API_KEY' provided")
+        sys.exit(1)
+
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={loc.city}&appid={api_key}&country={loc.country}&units=metric"
     if loc.state:
         url += f"&state={loc.state}"
 
@@ -61,9 +69,9 @@ def call_weather_api(loc):
 
 
 def convert_api_to_weather(data, loc):
-    temp = data.get('forecast').get('temp')
+    temp = data.get('main').get('temp')
     w = data.get('weather')
-    condition = f"{w.get('category')}: {w.get('description').capitalize()}"
+    condition = f"{w.get('pressure')}: {w.get('humidity')}."
     weather = Weather(loc, data.get('units'), temp, condition)
 
     return weather
