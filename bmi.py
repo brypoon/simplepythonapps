@@ -1,12 +1,17 @@
 # bmi calculator
 
 # for metric, BMI = (weight in kg / height in metres squared)
-# for imperial, BMI = (weight in pounds / heigh in inches squared) * 703
+# for imperial, BMI = (weight in pounds / height in inches squared) * 703
 
 def gather_info():
-    system = input("Are your measurements in metric or imperial units? ").lower().strip()
-    height = float(input("What is your height? (inches or metres) "))
-    weight = float(input("What is your weight? (pounds or kilograms) "))
+    system = input("Are your measurements in [m]etric or [i]mperial units? ").lower().strip()
+    if system.startswith("i"):
+        height = float(input("What is your height (inches)? "))
+        weight = float(input("What is your weight (pounds)? "))
+    elif system.startswith("m"):
+        height = float(input("What is your height (metres)? "))
+        weight = float(input("What is your weight (kilograms)? "))
+
     return weight, height, system
 
 def calculate_bmi(weight, height, system="metric"):
@@ -39,4 +44,3 @@ while True:
             bmi = calculate_bmi(weight, height, system)
             print(f"Your BMI is {bmi}.")
             break
-
