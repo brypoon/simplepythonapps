@@ -4,10 +4,10 @@
 # for imperial, BMI = (weight in pounds / heigh in inches squared) * 703
 
 def gather_info():
+    system = input("Are your measurements in metric or imperial units? ").lower().strip()
     height = float(input("What is your height? (inches or metres) "))
     weight = float(input("What is your weight? (pounds or kilograms) "))
-    system = input("Are your measurements in metric or imperial units? ").lower().strip()
-    return (weight, height, system)
+    return weight, height, system
 
 def calculate_bmi(weight, height, system="metric"):
     """
