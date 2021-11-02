@@ -3,7 +3,7 @@ import requests
 import os
 import sys
 
-Location = collections.namedtuple('Location', 'city state country')
+Location = collections.namedtuple('Location', 'city country state')
 Weather = collections.namedtuple('Weather', 'location units temp condition')
 
 
@@ -12,7 +12,7 @@ def main():
 
     # Get the location request
     location_text = input(
-        "Weather report for: (e.g. <city> Portland, <state> optional, <country> US)? ")
+        "Weather report for: (e.g. <city> Portland, <country> optional, <state> optional)? ")
     loc = convert_plaintext_location(location_text)
     if not loc:
         print(f"Could not find anything about {location_text}.")
@@ -29,7 +29,7 @@ def report_weather(loc, weather):
     location_name = get_location_name(loc)
     scale = get_scale(weather)
     print(
-        f"The weather in {location_name} is {weather.temp} {scale} and {weather.condition}.")
+        f"The weather in {location_name}is {weather.temp}{scale} with {weather.condition}")
 
 
 def get_scale(weather):
@@ -54,9 +54,12 @@ def call_weather_api(loc):
         print("Error: no 'OWM_API_KEY' provided")
         sys.exit(1)
 
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={loc.city}&appid={api_key}&country={loc.country}&units=metric"
+    url = f"http://api.openweathermap.org/data/2.5/weather?appid={api_key}&units=metric&q={loc.city}"
+    if loc.country:
+        url += f",{loc.country}"
     if loc.state:
-        url += f"&state={loc.state}"
+        url += f",{loc.state}"
+    
 
     resp = requests.get(url)
     if resp.status_code in {400, 404, 500}:
@@ -71,7 +74,7 @@ def call_weather_api(loc):
 def convert_api_to_weather(data, loc):
     temp = data.get('main').get('temp')
     w = data.get('weather')
-    condition = f"{w.get('pressure')}: {w.get('humidity')}."
+    condition = f"{w[0]['description'].title()}."
     weather = Weather(loc, data.get('units'), temp, condition)
 
     return weather
@@ -86,7 +89,7 @@ def convert_plaintext_location(location_text):
 
     city = ""
     state = ""
-    country = "us"
+    country = ""
     if len(parts) == 1:
         city = parts[0].strip()
     elif len(parts) == 2:
